@@ -14,12 +14,22 @@ public class CharacterScript : MonoBehaviour
     bool Race;
     bool Back;
     bool Up;
+    public Respawn respawn;
     //public GameObject particle;
     // public GameObject particle1;
     // Start is called before the first frame update
     void Start()
     {
         rb=GetComponent<Rigidbody>(); 
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "obstacle")
+        {
+            rb.constraints = RigidbodyConstraints.None;
+            rb.AddForce(new Vector3(5, 0, 0), ForceMode.Impulse);
+            respawn.kill = true;
+        }
     }
     public bool IsGrounded(){
         float distToGround = this.GetComponent<CapsuleCollider>().bounds.extents.y;
@@ -33,23 +43,23 @@ public class CharacterScript : MonoBehaviour
             rb.velocity = rb.velocity.normalized * maxSpeed;
         }
 
-        if (Race && IsGrounded())
+        if (Input.GetKey(KeyCode.RightArrow) && IsGrounded())
         {
-            Physics.gravity = new Vector3(0, 0, 0);
+            Physics.gravity = new Vector3(0, -2f, 0);
             rb.AddForce(new Vector3(0, 0, speed * 1.5f), ForceMode.Acceleration);
             //  this.transform.GetChild(0).transform.rotation = Quaternion.Euler(0, -90, 0);
             //  animator.SetBool("isRunning", true);
         }
-        if (Back && IsGrounded())
+        if (Input.GetKey(KeyCode.LeftArrow) && IsGrounded())
         {
-            Physics.gravity = new Vector3(0, 0, 0);
+            Physics.gravity = new Vector3(0, -2f, 0);
             rb.AddForce(new Vector3(0, 0, -speed * 1.5f), ForceMode.Acceleration);
             //  this.transform.GetChild(0).transform.rotation = Quaternion.Euler(0, 90, 0);
             //  animator.SetBool("isRunning", true);
 
         }
         if (IsGrounded()) {
-            if (Up)
+            if (Input.GetKey(KeyCode.UpArrow))
         {
             //    particle1.SetActive(true);
             //    particle.SetActive(true);
@@ -62,7 +72,7 @@ public class CharacterScript : MonoBehaviour
         {
             Physics.gravity = new Vector3(0, -10f, 0);
         }
-        if (!Race && !Up)
+        if (!Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.UpArrow))
         {
             //  animator.SetBool("isRunning", false);
         }
@@ -71,13 +81,13 @@ public class CharacterScript : MonoBehaviour
         {
             rb.AddForce(new Vector3(0, -speed, 0), ForceMode.Acceleration);
         }
-        if (Race && !IsGrounded())
+        if (Input.GetKey(KeyCode.RightArrow) && !IsGrounded())
         {
             Quaternion deltaRotation = Quaternion.Euler(new Vector3(0f, 0, rotateSpeed) * Time.deltaTime);
             rb.MoveRotation(rb.rotation * deltaRotation);
 /*            transform.Rotate(0f, 0f, rotateSpeed * Time.deltaTime);
 */        }
-        if (Back && !IsGrounded())
+        if (Input.GetKey(KeyCode.LeftArrow) && !IsGrounded())
         {
             Quaternion deltaRotation = Quaternion.Euler(new Vector3(0f, 0, -rotateSpeed) * Time.deltaTime);
             rb.MoveRotation(rb.rotation * deltaRotation);

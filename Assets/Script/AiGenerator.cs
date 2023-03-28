@@ -9,7 +9,7 @@ public class AiGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        InvokeRepeating("Enemy_Gen", 4f,9f);
+        InvokeRepeating("Enemy_Gen", 4f,40f);
     }
 
     // Update is called once per frame

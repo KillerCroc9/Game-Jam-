@@ -15,8 +15,8 @@ public class Win : MonoBehaviour
     IEnumerator MyCoroutine()
     {
 
-            yield return new WaitForSeconds(2);
-
+            yield return new WaitForSeconds(.1f);
+        Time.timeScale = 0;
         winScreen.SetActive(true);
 
         yield return null;

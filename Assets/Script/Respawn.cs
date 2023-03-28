@@ -7,6 +7,8 @@ using Cinemachine;
 public class Respawn : MonoBehaviour
 {
     bool isKill;
+    bool isKiller;
+    public bool kill;
     public GameObject respawn;
     bool dying;
     public GameObject block;
@@ -25,13 +27,12 @@ public class Respawn : MonoBehaviour
     public bool isKills()
     {
         float distToGround = this.GetComponent<CapsuleCollider>().bounds.extents.y;
-        return isKill = Physics.Raycast(transform.position, Vector3.up, (float)(distToGround + 0.1));
+        return isKiller = Physics.Raycast(transform.position, Vector3.up, (float)(distToGround + 0.1));
     }
     public bool isFalls()
     {
         if(Main.transform.position.y <= 10)
         {
-            print("heelo");
             return true;
         }
         else
@@ -42,7 +43,7 @@ public class Respawn : MonoBehaviour
 
     private void Update()
     {
-        if (isKilled() || isKills() || isFalls()    )
+        if (isKilled() || isKills() || isFalls() || kill)
         {
             
             StartCoroutine(MyCoroutine());
@@ -52,24 +53,26 @@ public class Respawn : MonoBehaviour
     IEnumerator MyCoroutine()
     {
         if (!dying) {
+            kill = false;
             block.SetActive(true);
             source.Play();
             transform.parent.gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
             transform.parent.gameObject.transform.Rotate(35, 0, 0);
-            virtualCamera.Follow =null;
             dying = true;
-        yield return new WaitForSeconds(4);
+            yield return new WaitForSeconds(2);
+            virtualCamera.Follow = null;
+            yield return new WaitForSeconds(2);
         transform.parent.gameObject.GetComponent<Rigidbody>().isKinematic = true;
-        transform.parent.gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePositionX;
-        transform.parent.gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotationX;
-        transform.parent.gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotationY;
+        transform.parent.gameObject.GetComponent<Rigidbody>().constraints = 
+        RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY;
         transform.parent.gameObject.transform.transform.rotation = Quaternion.Euler(0, 90, 90);
-        transform.parent.gameObject.GetComponent<Rigidbody>().isKinematic = false;
+            kill = false;
+            transform.parent.gameObject.GetComponent<Rigidbody>().isKinematic = false;
         transform.parent.gameObject.transform.position = respawn.transform.position;
             dying = false;
             block.SetActive(false);
             virtualCamera.Follow = this.transform.parent.transform;
-
+            
             yield return null;
         }
     }
